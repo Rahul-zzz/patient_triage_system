@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triage Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div>
+            <h1>Patient Triage Dashboard</h1>
+            <p>Monitor registered patients and their priority order</p>
+        </div>
+        <a class="nav-btn" href="/">+ Register Patient</a>
+    </header>
+
+    <main class="container">
+        <section class="stats">
+            <div class="stat-card critical-card">
+                <span>Critical</span>
+                <strong>{{ critical_count }}</strong>
+                <small>Priority 3</small>
+            </div>
+            <div class="stat-card moderate-card">
+                <span>Moderate</span>
+                <strong>{{ moderate_count }}</strong>
+                <small>Priority 2</small>
+            </div>
+            <div class="stat-card low-card">
+                <span>Low</span>
+                <strong>{{ low_count }}</strong>
+                <small>Priority 1</small>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="section-heading">
+                <div>
+                    <h2>Patient Queue</h2>
+                    <p>Patients are ordered by triage priority.</p>
+                </div>
+            </div>
+
+            {% if patients %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Age</th>
+                            <th>Symptoms</th>
+                            <th>Priority</th>
+                            <th>Waiting Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td><span class="id-badge">#{{ patient[0] }}</span></td>
+                            <td><strong>{{ patient[1] }}</strong></td>
+                            <td>{{ patient[2] }}</td>
+                            <td>{{ patient[3] }}</td>
+                            <td>
+                                {% if patient[4] == 3 %}
+                                    <span class="priority critical">Critical</span>
+                                {% elif patient[4] == 2 %}
+                                    <span class="priority moderate">Moderate</span>
+                                {% else %}
+                                    <span class="priority low">Low</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ patient[5] }} min</td>
+                            <td>
+                                <a class="delete-btn"
+                                   href="/delete/{{ patient[0] }}"
+                                   onclick="return confirm('Delete this patient?')">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty">
+                <h3>No patients registered</h3>
+                <p>Add a patient to populate the triage queue.</p>
+                <a class="primary-btn inline" href="/">Register Patient</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="info-card">
+            <h3>Priority logic</h3>
+            <p><strong>Critical:</strong> emergency-type symptoms are assigned priority 3.</p>
+            <p><strong>Moderate:</strong> symptoms such as fever, abdominal pain and fracture are assigned priority 2.</p>
+            <p><strong>Low:</strong> symptoms such as headache, cold and body pain are assigned priority 1.</p>
+            <small>These rules reproduce the logic in the uploaded application and are not a medical decision tool.</small>
+        </section>
+    </main>
+</body>
+</html>
